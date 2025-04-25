@@ -10,14 +10,18 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{ folder }}</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
   <div id="container">
-    <strong class="capitalize">{{ folder }}</strong>
-    <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+    <swiper-container  [slidesPerView]="1" [loop]="true" [autoplay]="true" [pagination]="{type: 'bullets', clickable: true}" >
+      <swiper-slide>
+        <iframe width="90%" height="auto" src="https://www.youtube.com/embed/voirhSHludw?si=LeYt2_DLd0laffGh" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </swiper-slide>
+      <swiper-slide>
+        <img src="assets/icon/favicon.png" alt="Logo" class="logo" />
+      </swiper-slide>
+      <swiper-slide>
+        <img src="assets/icon/favicon.png" alt="Logo" class="logo" />
+      </swiper-slide>
+    </swiper-container>
   </div>
 </ion-content>
