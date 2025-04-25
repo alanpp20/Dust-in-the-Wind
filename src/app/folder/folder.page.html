@@ -1,5 +1,5 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
+<ion-header [translucent]="true" collapse="fade" style="background-color: #1C8C79;">
+  <ion-toolbar style="top: 20px;">
     <ion-buttons slot="end">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
@@ -12,7 +12,7 @@
 <ion-content [fullscreen]="true">
 
   <div id="container">
-    <swiper-container  [slidesPerView]="1" [loop]="true" [autoplay]="true" [pagination]="{type: 'bullets', clickable: true}" >
+    <swiper-container [slidesPerView]="1" [loop]="true" [autoplay]="true" [pagination]="{type: 'bullets', clickable: true}" >
       <swiper-slide>
         <iframe width="90%" height="auto" src="https://www.youtube.com/embed/voirhSHludw?si=LeYt2_DLd0laffGh" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
         </swiper-slide>
