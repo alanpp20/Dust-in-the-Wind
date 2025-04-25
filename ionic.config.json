@@ -1,0 +1,7 @@
+{
+  "name": "DustInTheWind",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
