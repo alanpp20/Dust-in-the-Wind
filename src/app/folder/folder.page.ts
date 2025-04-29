@@ -1,6 +1,8 @@
+import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent} from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonTitle} from '@ionic/angular/standalone';
 import { register } from 'swiper/element/bundle';
 
 
@@ -11,7 +13,7 @@ register();
   selector: 'app-folder',
   templateUrl: './folder.page.html',
   styleUrls: ['./folder.page.scss'],
-  imports: [IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent],
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonMenuButton],
   standalone: true,
 })
 export class FolderPage implements OnInit {
