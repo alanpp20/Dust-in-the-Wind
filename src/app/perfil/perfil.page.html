@@ -10,8 +10,34 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-
-  <div id="container">
-    
+  <div id="container" style="display: flex; flex-direction: column; align-items: center; margin-top: 40px;">
+    <ion-avatar style="width: 110px; height: 110px; margin-bottom: 16px;">
+      <img src="assets/icon/favicon.png" alt="Foto do Perfil" />
+    </ion-avatar>
+    <form style="width: 100%; max-width: 400px; margin-bottom: 16px; display: flex; flex-direction: column; align-items: center;">
+      <ion-item>
+        <ion-label position="floating">Nome</ion-label>
+        <ion-input [(ngModel)]="nome" name="nome" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Nova Senha</ion-label>
+        <ion-input [(ngModel)]="senha" name="senha" type="password"></ion-input>
+      </ion-item>
+      <ion-button color="primary" expand="block" style="max-width: 200px; margin-top: 16px;" (click)="alterarPerfil()">Salvar Alterações</ion-button>
+    </form>
+    <ion-list style="width: 100%; max-width: 400px; margin-top: 32px;">
+      <ion-item>
+        <ion-label>
+          <strong>Sobre:</strong>
+          <p>Breve descrição do usuário, interesses ou informações adicionais.</p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          <strong>Membro desde:</strong>
+          <p>Janeiro de 2024</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
   </div>
 </ion-content>

@@ -1,3 +1,13 @@
+.content-box{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #1C8C79;
+}
+
+
 ion-toolbar {
   --background: #1C8C79;
   --color: white;
@@ -10,6 +20,9 @@ ion-menu-button {
 
 swiper-container {
   --swiper-pagination-color: #1C8C79;
+  --swiper-navigation-color: #1C8C79;
+
+  border-bottom: 1px solid #1C8C79;
 }
 
 swiper-slide {
