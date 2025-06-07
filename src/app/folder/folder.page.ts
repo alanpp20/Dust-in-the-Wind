@@ -10,13 +10,6 @@ import { ArticlesComponent } from '../articles/articles.component';
 
 register();
 
-
-function ionViewWillEnter() {
-  StatusBar.setOverlaysWebView({ overlay: false });
-  StatusBar.show({animation: Animation.None});
-  StatusBar.setStyle({ style: Style.Dark });
-}
-
 @Component({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   selector: 'app-folder',
@@ -30,7 +23,6 @@ export class FolderPage implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
   
   constructor() {
-    ionViewWillEnter();
   }
 
   ngOnInit() {

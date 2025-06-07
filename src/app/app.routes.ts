@@ -20,11 +20,11 @@ export const routes: Routes = [
     loadComponent: () => import('./login/login.page').then( m => m.LoginPage)
   },
   {
-    path: 'cadastro',
-    loadComponent: () => import('./cadastro/cadastro.page').then( m => m.CadastroPage)
-  },
-  {
     path: 'recover',
     loadComponent: () => import('./recover/recover.page').then( m => m.RecoverPage)
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./register/register.page').then( m => m.RegisterPage)
   },
 ];

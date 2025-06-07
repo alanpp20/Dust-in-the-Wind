@@ -9,7 +9,7 @@ ion-content.login-page {
   background-size: cover;
   background-position: center;
   background-blend-mode: overlay;
-  --padding-top: 50px;
+  --padding-top: 0;
   --padding-bottom: 20px;
   display: flex;
   flex-direction: column;
@@ -75,12 +75,11 @@ ion-item.custom-input ion-input {
 }
 
 .login-button {
-  --background: #39853c;
+  --background: #4CAF50;
 }
 
 .register-button {
   --background: #2196F3;
-  color: white;
 }
 
 /* Link "esqueci minha senha" */
