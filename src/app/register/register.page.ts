@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IonContent, IonInput, IonButton, IonItem, IonLabel, IonImg, IonCheckbox} from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -16,7 +15,6 @@ import { RouterLink } from '@angular/router';
     IonLabel,
     FormsModule,
     IonImg,
-    RouterLink,
     IonCheckbox]
 })
 export class RegisterPage implements OnInit {
