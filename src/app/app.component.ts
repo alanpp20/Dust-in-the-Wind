@@ -5,6 +5,7 @@ import { IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, Io
 import { addIcons } from 'ionicons';
 import { home, person} from 'ionicons/icons';
 import {IonRouterOutlet } from '@ionic/angular/standalone';
+import { HttpClient } from '@angular/common/http';
 
 
 @Component({
