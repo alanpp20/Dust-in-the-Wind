@@ -1,0 +1,56 @@
+<!-- src/app/chatbot/chatbot.page.html -->
+<ion-header class="chatbot-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <!-- Logo à esquerda -->
+      <img src="assets/icon/favicon.png" alt="Logo do App" class="header-logo" />
+    </ion-buttons>
+    <ion-title>Chatbot de Futebol</ion-title>
+    <ion-buttons slot="end">
+      <!-- Botão de menu à direita -->
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="chatbot-content">
+  <ion-list lines="none" class="message-list">
+    <!-- Loop para exibir as mensagens -->
+    @for (message of messages; track $index) {
+      <ion-item
+        [class.user-message]="message.role === 'user'"
+        [class.assistant-message]="message.role === 'assistant'"
+      >
+        <!-- O ion-label é o próprio balão de mensagem -->
+        <ion-label>{{ message.content }}</ion-label>
+      </ion-item>
+    }
+
+    <!-- Indicador de carregamento do assistente -->
+    @if (isLoading) {
+      <ion-item class="loading-message">
+        <ion-spinner name="dots"></ion-spinner>
+        <p>Digitando...</p>
+      </ion-item>
+    }
+  </ion-list>
+</ion-content>
+
+<ion-footer class="chatbot-footer">
+  <ion-toolbar>
+    <ion-input
+      [(ngModel)]="userMessage"
+      placeholder="Pergunte sobre futebol..."
+      (keyup.enter)="sendMessage()"
+      class="message-input"
+      [disabled]="isLoading"
+    ></ion-input>
+    <ion-button
+      slot="end"
+      (click)="sendMessage()"
+      [disabled]="isLoading || !userMessage.trim()"
+    >
+      <ion-icon name="send-outline"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

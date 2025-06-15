@@ -1,0 +1,57 @@
+/* src/app/placares/placares.page.scss */
+
+ion-header {
+  --background: #1C8C79; /* Cor de fundo principal do cabeçalho */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Sombra mais pronunciada para profundidade */
+  transition: background-color 0.3s ease; /* Transição suave para a cor de fundo */
+}
+
+ion-toolbar {
+  --background: #1C8C79; /* Garante que a barra de ferramentas tenha a mesma cor de fundo */
+  --color: #ffffff; /* Cor do texto e ícones na barra de ferramentas */
+  padding: 0 15px; /* Preenchimento horizontal para espaçamento */
+  min-height: 64px; /* Altura mínima para o toolbar */
+}
+
+.logo {
+  height: 45px; /* Altura do logotipo */
+  width: auto; /* Largura automática para manter a proporção */
+  margin-left: 5px; /* Pequena margem à esquerda */
+  vertical-align: middle; /* Alinha verticalmente */
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.3)); /* Sombra sutil no logo */
+}
+
+ion-title {
+  color: #ffffff; /* Cor do texto do título */
+  font-size: 1.6em; /* Tamanho da fonte maior para o título */
+  font-weight: 700; /* Negrito mais forte */
+  text-align: center; /* Centraliza o texto do título */
+  padding-inline: 0; /* Remove preenchimento padrão */
+  flex-grow: 1; /* Permite que o título ocupe o espaço disponível */
+  letter-spacing: 0.5px; /* Espaçamento entre letras */
+}
+
+ion-buttons {
+  display: flex;
+  align-items: center; /* Alinha os itens verticalmente ao centro */
+}
+
+ion-menu-button {
+  --color: #ffffff; /* Cor do ícone do botão de menu */
+  font-size: 1.8em; /* Tamanho maior para o ícone do menu */
+}
+
+/* Ajustes para telas menores */
+@media (max-width: 768px) {
+  ion-toolbar {
+    min-height: 56px; /* Altura padrão do toolbar em mobile */
+  }
+
+  ion-title {
+    font-size: 1.3em; /* Reduz o tamanho da fonte em telas menores */
+  }
+
+  .logo {
+    height: 40px; /* Reduz o tamanho do logotipo em telas menores */
+  }
+}

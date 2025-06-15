@@ -1,3 +1,56 @@
-<p>
-  articles works!
-</p>
+<!-- src/app/articles/articles.component.html -->
+<div class="live-games-grid-container"> <!-- Adicione esta classe para o layout de grid -->
+  @if (isLoading) {
+    <div class="loading-spinner-wrapper"> <!-- Adicione esta classe para o spinner -->
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else {
+    @for (game of liveGames; track game.fixture.id) {
+      <ion-card class="match-card"> <!-- Adicione esta classe para o card do jogo -->
+        <ion-card-header class="match-card-header"> <!-- Adicione esta classe para o cabeçalho do card -->
+          <ion-card-title class="ion-text-center league-name-title"> <!-- Adicione esta classe para o título da liga -->
+            {{ game.league.name }}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content class="match-card-content"> <!-- Adicione esta classe para o conteúdo do card -->
+          <ion-grid>
+            <ion-row class="ion-align-items-center ion-justify-content-center match-score-row"> <!-- Adicione esta classe para a linha do placar -->
+              <ion-col size="5" class="ion-text-center team-col team-home"> <!-- Adicione estas classes para a coluna do time da casa -->
+                <img [src]="game.teams.home.logo" alt="{{ game.teams.home.name }} Logo" class="team-logo"> <!-- Adicione esta classe para o logo -->
+                <ion-label><h5 class="team-name">{{ game.teams.home.name }}</h5></ion-label> <!-- Adicione esta classe para o nome do time -->
+              </ion-col>
+
+              <ion-col size="2" class="ion-text-center score-col"> <!-- Adicione esta classe para a coluna do placar central -->
+                <!-- Indicador de status do jogo (AO VIVO, FIM, VS, etc.) -->
+                <div class="match-status-indicator">
+                  <!-- Adapte a lógica abaixo com base nos seus dados de status (game.fixture.status.short) -->
+                  <span *ngIf="game.fixture.status.short === 'HT'" class="status-badge status-half-time">Intervalo</span>
+                  <span *ngIf="game.fixture.status.short === 'FT'" class="status-badge status-full-time">Fim</span>
+                  <span *ngIf="game.fixture.status.short === '1H' || game.fixture.status.short === '2H' || game.fixture.status.short === 'ET'" class="status-badge status-live">AO VIVO</span>
+                  <span *ngIf="game.fixture.status.short === 'NS'" class="status-badge status-not-started">VS</span>
+                  <span *ngIf="game.fixture.status.short === 'PST'" class="status-badge status-postponed">Adiado</span>
+                  <span *ngIf="game.fixture.status.short === 'CANC'" class="status-badge status-cancelled">Cancelado</span>
+                </div>
+                <!-- Placar -->
+                <div class="score-numbers">
+                  <span class="home-score">{{ game.goals.home }}</span>
+                  <span class="score-separator">-</span>
+                  <span class="away-score">{{ game.goals.away }}</span>
+                </div>
+                <!-- Tempo de jogo (se aplicável) -->
+                <p class="elapsed-time">{{ game.fixture.status.elapsed }}'</p>
+              </ion-col>
+
+              <ion-col size="5" class="ion-text-center team-col team-away"> <!-- Adicione estas classes para a coluna do time visitante -->
+                <img [src]="game.teams.away.logo" alt="{{ game.teams.away.name }} Logo" class="team-logo">
+                <ion-label><h5 class="team-name">{{ game.teams.away.name }}</h5></ion-label>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+    } @empty {
+      <p class="no-live-games-message">Nenhum jogo ao vivo no momento.</p> <!-- Adicione esta classe para a mensagem de vazio -->
+    }
+  }
+</div>

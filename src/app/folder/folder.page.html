@@ -1,4 +1,4 @@
-
+<!-- src/app/folder/folder.page.html -->
 <ion-header collapse="fade" style="background-color: #1C8C79;">
   <ion-toolbar>
     <ion-buttons slot="end">
@@ -7,15 +7,17 @@
     <ion-buttons slot="start">
       <img src="assets/icon/favicon.png" alt="Logo" class="logo" />
     </ion-buttons>
+    <ion-title style="text-align: center;">Meu App de Futebol</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [fullscreen]="true">
   <div id="container">
+    <!-- Seu conteúdo existente: Swiper -->
     <swiper-container [slidesPerView]="1" navigation="true" [loop]="true" autoplay="false" [pagination]="{type: 'bullets', clickable: true}" >
       <swiper-slide>
         <iframe width="90%" height="auto" src="https://youtube.com/embed/8uSBCkXUCAc?si=3GDNWby76Q1mf_en" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-        </swiper-slide>
+      </swiper-slide>
       <swiper-slide>
         <img src="assets/icon/favicon.png" alt="Logo" class="logo" />
       </swiper-slide>
@@ -23,18 +25,14 @@
         <img src="assets/icon/favicon.png" alt="Logo" class="logo" />
       </swiper-slide>
     </swiper-container>
+
+    <!-- O div com a classe "content" agora está vazio, pois seu conteúdo foi removido -->
     <div class="content">
-      <articles></articles>
-      <h1>Welcome to the App</h1>
-      <p>This is a simple app using Ionic and Angular.</p>
-      <div class="content-box">
-        <img src="assets/icon/favicon.png" alt="Logo" class="content-box-image" />
-        <h2>TItle</h2>
-      </div>
-      <div class="content-box">
-        <img src="assets/icon/favicon.png" alt="Logo" class="content-box-image" />
-        <h2>TItle</h2>
-      </div>
+      <!-- Conteúdo de boas-vindas e content-box removidos daqui -->
     </div>
+
+    <!-- O título "Últimas Notícias de Futebol" também foi removido -->
+    <app-news></app-news>
+
   </div>
 </ion-content>

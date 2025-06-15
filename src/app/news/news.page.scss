@@ -1,0 +1,93 @@
+/* src/app/news/news.page.scss */
+
+.news-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+  padding: 25px;
+  max-width: 1200px;
+  margin: 20px auto;
+}
+
+.news-card {
+  --background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.news-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15), 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.news-card ion-img {
+  height: 180px;
+  object-fit: cover;
+  width: 100%;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.news-card ion-card-header {
+  padding: 15px 20px 10px;
+  background-color: #fcfcfc;
+}
+
+.news-card ion-card-title {
+  font-size: 1.15em;
+  font-weight: 700;
+  color: #333;
+  line-height: 1.4;
+  margin-bottom: 5px;
+}
+
+.news-card ion-card-subtitle {
+  font-size: 0.85em;
+  color: #666;
+}
+
+.news-card ion-card-content {
+  padding: 15px 20px 20px;
+  color: #555;
+  font-size: 0.95em;
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+.loading-spinner-wrapper, .error-message, .no-news-message {
+  text-align: center;
+  padding: 40px;
+  grid-column: 1 / -1;
+}
+
+.loading-spinner-wrapper ion-spinner {
+  color: #1C8C79;
+  width: 50px;
+  height: 50px;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.no-news-message {
+  color: #888;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .news-container {
+    grid-template-columns: 1fr;
+    padding: 15px;
+    gap: 20px;
+  }
+
+  .news-card ion-img {
+    height: 160px;
+  }
+}

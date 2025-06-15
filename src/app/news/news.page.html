@@ -1,0 +1,29 @@
+<!-- src/app/news/news.page.html -->
+<!-- O cabeçalho será fornecido pela página 'folder' -->
+
+<div class="news-container">
+  @if (isLoading) {
+    <div class="loading-spinner-wrapper">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else if (error) {
+    <p class="error-message">{{ error }}</p>
+  } @else if (news.length === 0) {
+    <p class="no-news-message">Nenhuma notícia de futebol disponível no momento.</p>
+  } @else {
+    @for (article of news; track article.link) {
+      <ion-card class="news-card" (click)="openNewsLink(article.link)">
+        @if (article.image_url) {
+          <ion-img [src]="article.image_url" alt="{{ article.title }}"></ion-img>
+        }
+        <ion-card-header>
+          <ion-card-title>{{ article.title }}</ion-card-title>
+          <ion-card-subtitle>{{ article.source_id }} - {{ article.pubDate | date:'shortDate' }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <p>{{ article.description }}</p>
+        </ion-card-content>
+      </ion-card>
+    }
+  }
+</div>
