@@ -78,4 +78,18 @@ swiper-slide img {
   width: 50px;
   height: auto;
 }
+/* Adicione este estilo ao final do seu arquivo scss */
+
+.shortcut-icon {
+  font-size: 64px; // Tamanho grande para o ícone
+  color: var(--ion-color-primary); // Usa a cor primária do seu app
+  margin-bottom: 8px;
+}
+
+// Estilo que você já tinha para o texto
+.shortcut-text {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #333;
+}
 

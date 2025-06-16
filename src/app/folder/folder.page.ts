@@ -1,14 +1,12 @@
 // src/app/folder/folder.page.ts
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent} from '@ionic/angular/standalone';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
+import { IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonCard, IonCardContent } from '@ionic/angular/standalone';
 import { register } from 'swiper/element/bundle';
-// import { StatusBar, Animation, Style } from '@capacitor/status-bar'; // Removido se não estiver usando diretamente aqui
-// import { ArticlesComponent } from '../articles/articles.component'; // Removido, pois não é usado no folder.page.html
-
-import { NewsPage } from '../news/news.page'; // Importe o componente NewsPage
+import { NewsPage } from '../news/news.page';
 
 register();
 
@@ -17,28 +15,30 @@ register();
   selector: 'app-folder',
   templateUrl: './folder.page.html',
   styleUrls: ['./folder.page.scss'],
+  standalone: true,
   imports: [
-    NewsPage, // Adicione NewsPage aqui
+    NewsPage,
     IonContent,
     IonHeader,
+    IonTitle,
     IonToolbar,
     CommonModule,
     FormsModule,
     IonButtons,
-    IonMenuButton
-    // ArticlesComponent, // Remova esta linha se ArticlesComponent não for usado no folder.page.html
+    IonMenuButton,
+    IonCard,
+    IonCardContent,
+    RouterModule,
   ],
-  standalone: true,
 })
 export class FolderPage implements OnInit {
-  public folder!: string;
-  private activatedRoute = inject(ActivatedRoute);
+  videoUrl = 'https://www.youtube.com/embed/jVWnNV43ia4?si=nmJM5K3T7uz0B_pa" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+  safeVideoUrl: SafeResourceUrl;
 
-  constructor() {
+  constructor(private sanitizer: DomSanitizer) {
+    this.safeVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.videoUrl);
   }
 
   ngOnInit() {
-    this.folder = this.activatedRoute.snapshot.paramMap.get('id') as string;
   }
-
 }

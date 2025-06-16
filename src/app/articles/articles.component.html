@@ -1,10 +1,10 @@
 <!-- src/app/articles/articles.component.html -->
 <div class="live-games-grid-container"> <!-- Adicione esta classe para o layout de grid -->
   @if (isLoading) {
-    <div class="loading-spinner-wrapper"> <!-- Adicione esta classe para o spinner -->
-      <ion-spinner name="crescent"></ion-spinner>
-    </div>
-  } @else {
+  <div class="loading-container">
+    <ion-spinner color="primary"></ion-spinner>
+  </div>
+} @else {
     @for (game of liveGames; track game.fixture.id) {
       <ion-card class="match-card"> <!-- Adicione esta classe para o card do jogo -->
         <ion-card-header class="match-card-header"> <!-- Adicione esta classe para o cabeçalho do card -->

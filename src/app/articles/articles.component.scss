@@ -267,4 +267,23 @@ ion-spinner {
     font-size: 0.75em;
     padding: 3px 8px;
   }
+
+.loading-container {
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center;     /* Centraliza verticalmente */
+
+  /* Define uma altura para que a centralização vertical funcione.
+     70vh significa 70% da altura da tela, ajuste se necessário. */
+  height: 70vh; 
+}
+  .loading-spinner-wrapper {
+    padding: 40px;
+  }
+
+  ion-spinner {
+    width: 50px;
+    height: 50px;
+    stroke-width: 3px;
+  }
 }
