@@ -1,95 +1,249 @@
-.content-box{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid #1C8C79;
+/* src/app/folder/folder.page.scss (ou o SCSS da sua página principal) */
+
+/* -------------------------------------------------------------------------- */
+/*                            Variáveis de Cores (Tema Claro)                 */
+/* -------------------------------------------------------------------------- */
+
+// 1. Defina a cor de destaque como uma variável SASS
+$accent-base-color: #1C8C79;
+
+:root {
+  --page-background: #f8f8f8; /* Fundo geral da página, um cinza muito claro */
+  --header-background: #{$accent-base-color}; /* Usa a variável SASS */
+  --header-text-color: #ffffff; /* Texto branco para o cabeçalho */
+
+  --text-primary: #333333; /* Cor principal do texto (escuro) */
+  --text-secondary: #666666; /* Cor secundária do texto (cinza médio) */
+  --text-accent: #{$accent-base-color}; /* 2. Usa a variável SASS para definir a variável CSS */
+
+  --card-background: #ffffff; /* Fundo de elementos como cards ou seções */
+  --border-color-light: #e0e0e0; /* Cor de borda clara */
+  --border-color-accent: #{$accent-base-color}; /* Usa a variável SASS */
+
+  --shadow-light: rgba(255, 255, 255, 0.08); /* Sombra leve */
+  --shadow-medium: rgb(255, 255, 255); /* Sombra média */
+
+  --border-radius-base: 12px; /* Raio de borda padrão */
+  --transition-speed: 0.3s; /* Velocidade padrão das transições */
 }
 
-
-ion-toolbar {
-  --background: #1C8C79;
-  --color: white;
-  padding-inline: 10px;
+/* -------------------------------------------------------------------------- */
+/*                                  Global                                    */
+/* -------------------------------------------------------------------------- */
+ion-content {
+  color: var(--text-primary); /* Cor do texto padrão */
 }
 
-ion-menu-button {
-  color: var(--ion-color-white);
+/* -------------------------------------------------------------------------- */
+/*                                  Header                                    */
+/* -------------------------------------------------------------------------- */
+ion-header {
+  --background: var(--header-background); /* Fundo do cabeçalho */
+  box-shadow: 0 4px 12px var(--shadow-medium); /* Sombra mais pronunciada */
+  transition: background-color var(--transition-speed) ease;
+
+  ion-toolbar {
+    --background: var(--header-background); /* Garante a cor de fundo da toolbar */
+    --color: var(--header-text-color); /* Cor do texto e ícones */
+    padding: 0 15px; /* Padding horizontal */
+    min-height: 64px; /* Altura mínima */
+  }
+
+  .header-logo {
+    height: 45px; /* Altura do logo */
+    width: auto;
+    margin-left: 5px;
+    vertical-align: middle;
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.2)); /* Sombra mais suave no logo */
+  }
+
+  ion-title {
+    color: var(--header-text-color);
+    font-size: 1.6em;
+    font-weight: 700;
+    text-align: center;
+    padding-inline: 0;
+    flex-grow: 1;
+    letter-spacing: 0.5px;
+  }
+
+  ion-buttons {
+    display: flex;
+    align-items: center;
+  }
+
+  ion-menu-button {
+    --color: var(--header-text-color);
+    font-size: 1.8em;
+  }
 }
 
+/* -------------------------------------------------------------------------- */
+/*                               Swiper Carousel                              */
+/* -------------------------------------------------------------------------- */
 swiper-container {
-  --swiper-pagination-color: #1C8C79;
-  --swiper-navigation-color: #1C8C79;
+  --swiper-pagination-color: var(--text-accent); /* Cor dos bullets da paginação */
+  --swiper-navigation-color: var(--text-accent); /* Cor das setas de navegação */
+  --swiper-pagination-bullet-inactive-color: var(--text-secondary); /* Cor dos bullets inativos */
+  --swiper-pagination-bullet-inactive-opacity: 0.4;
 
-  border-bottom: 1px solid #1C8C79;
+  border-bottom: 1px solid var(--border-color-accent); /* Borda inferior de destaque */
+  background-color: var(--card-background); /* Fundo do carrossel */
+  box-shadow: 0 2px 8px var(--shadow-light); /* Sombra sutil */
+  margin-bottom: 25px; /* Espaçamento abaixo do carrossel */
+  padding-bottom: 20px; /* Espaço para a paginação */
 }
 
 swiper-slide {
   display: flex;
-  position: relative;
-
   flex-direction: column;
-  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-
   width: 100%;
-  height: 250px;
-
+  height: 280px; /* Altura ligeiramente maior para o slide */
   font-size: 18px;
-
   text-align: center;
   box-sizing: border-box;
+  padding: 15px; /* Padding interno para o conteúdo do slide */
 }
 
-swiper-slide img {
-  width: auto;
-  max-width: 100%;
-  height: auto;
-  max-height: 100%;
+swiper-slide iframe {
+  width: 95%; /* Ajusta a largura do iframe */
+  height: 220px; /* Altura fixa para o iframe de vídeo */
+  border-radius: var(--border-radius-base); /* Cantos arredondados para o vídeo */
+  box-shadow: 0 4px 10px var(--shadow-light); /* Sombra para o vídeo */
 }
 
-#container {
-  text-align: center;
-  position: absolute;
-  left: 0;
-  right: 0;
-  align-items: start;
+.shortcut-slide {
+  cursor: pointer;
+  transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  border-radius: var(--border-radius-base); /* Cantos arredondados para o slide de atalho */
+  background-color: var(--card-background); /* Fundo branco para o slide de atalho */
+  margin: 10px; /* Margem para separar os slides de atalho */
+  box-shadow: 0 4px 10px var(--shadow-light); /* Sombra para o slide de atalho */
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+.shortcut-slide:hover {
+  transform: translateY(-5px); /* Efeito de elevação no hover */
+  box-shadow: 0 8px 15px var(--shadow-medium); /* Sombra mais pronunciada no hover */
 }
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-  color: #8c8c8c;
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
-}
-
-.logo {
-  width: 50px;
-  height: auto;
-}
-/* Adicione este estilo ao final do seu arquivo scss */
 
 .shortcut-icon {
-  font-size: 64px; // Tamanho grande para o ícone
-  color: var(--ion-color-primary); // Usa a cor primária do seu app
-  margin-bottom: 8px;
+  font-size: 72px; /* Tamanho grande para o ícone */
+  color: var(--text-accent); /* Usa a cor de destaque (verde) */
+  margin-bottom: 12px; /* Espaçamento maior */
+  transition: color var(--transition-speed) ease;
 }
 
-// Estilo que você já tinha para o texto
+.shortcut-slide:hover .shortcut-icon {
+  // 3. Usa a variável SASS diretamente na função darken()
+  color: darken($accent-base-color, 10%); /* Escurece o ícone no hover */
+}
+
 .shortcut-text {
   font-weight: bold;
-  font-size: 1.1em;
-  color: #333;
+  font-size: 1.2em; /* Texto ligeiramente maior */
+  color: var(--text-primary); /* Cor principal do texto */
+  margin: 0; /* Remove margem padrão */
 }
 
+/* -------------------------------------------------------------------------- */
+/*                               Section Title                                */
+/* -------------------------------------------------------------------------- */
+.section-title {
+  font-size: 1.8em;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 25px;
+  padding: 0 15px;
+  position: relative; /* Para o pseudo-elemento */
+}
+
+.section-title::after {
+  content: '';
+  display: block;
+  width: 60px; /* Linha decorativa */
+  height: 4px;
+  background-color: var(--text-accent);
+  margin: 10px auto 0; /* Centraliza a linha */
+  border-radius: 2px;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               Media Queries                                */
+/* -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  ion-header {
+    ion-toolbar {
+      min-height: 56px;
+      padding: 0 10px;
+    }
+    ion-title {
+      font-size: 1.3em;
+    }
+    .header-logo {
+      height: 40px;
+    }
+  }
+
+  swiper-slide {
+    height: 250px;
+  }
+
+  swiper-slide iframe {
+    height: 180px;
+  }
+
+  .shortcut-icon {
+    font-size: 64px;
+  }
+
+  .shortcut-text {
+    font-size: 1.1em;
+  }
+
+  .section-title {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  ion-header {
+    ion-toolbar {
+      padding: 0 8px;
+    }
+    ion-title {
+      font-size: 1.1em;
+    }
+    .header-logo {
+      height: 35px;
+    }
+    ion-menu-button {
+      font-size: 1.6em;
+    }
+  }
+
+  swiper-slide {
+    height: 220px;
+    padding: 10px;
+  }
+
+  swiper-slide iframe {
+    height: 150px;
+  }
+
+  .shortcut-icon {
+    font-size: 56px;
+  }
+
+  .shortcut-text {
+    font-size: 1em;
+  }
+
+  .section-title {
+    font-size: 1.3em;
+    margin-bottom: 15px;
+  }
+}

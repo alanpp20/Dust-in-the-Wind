@@ -2,18 +2,18 @@
 <ion-header class="chatbot-header">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <!-- Logo à esquerda -->
-      <img src="assets/icon/favicon.png" alt="Logo do App" class="header-logo" />
+      <!-- Logo ou ícone do app no cabeçalho -->
+      <!-- Substitua 'assets/icon/favicon.png' pelo caminho do seu logo -->
+      <img src="assets/icon/favicon.png" alt="Logo" class="header-logo" />
     </ion-buttons>
     <ion-title>Chatbot de Futebol</ion-title>
     <ion-buttons slot="end">
-      <!-- Botão de menu à direita -->
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="chatbot-content">
+<ion-content #content [fullscreen]="true" class="chatbot-content">
   <ion-list lines="none" class="message-list">
     <!-- Loop para exibir as mensagens -->
     @for (message of messages; track $index) {
@@ -34,10 +34,23 @@
       </ion-item>
     }
   </ion-list>
+
+  <!-- Player de áudio (oculto) -->
+  <audio #audioPlayer controls style="display: none;"></audio>
 </ion-content>
 
 <ion-footer class="chatbot-footer">
   <ion-toolbar>
+    <!-- Botão de Play/Pause para o áudio -->
+    <ion-button
+      slot="start"
+      (click)="toggleAudioPlayback()"
+      [disabled]="!currentAudioUrl || isLoading"
+      class="audio-control-button"
+    >
+      <ion-icon [name]="isPlayingAudio ? 'pause-outline' : 'play-outline'"></ion-icon>
+    </ion-button>
+
     <ion-input
       [(ngModel)]="userMessage"
       placeholder="Pergunte sobre futebol..."
