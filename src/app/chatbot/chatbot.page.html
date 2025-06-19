@@ -2,8 +2,6 @@
 <ion-header class="chatbot-header">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <!-- Logo ou ícone do app no cabeçalho -->
-      <!-- Substitua 'assets/icon/favicon.png' pelo caminho do seu logo -->
       <img src="assets/icon/favicon.png" alt="Logo" class="header-logo" />
     </ion-buttons>
     <ion-title>Chatbot de Futebol</ion-title>
@@ -21,7 +19,6 @@
         [class.user-message]="message.role === 'user'"
         [class.assistant-message]="message.role === 'assistant'"
       >
-        <!-- O ion-label é o próprio balão de mensagem -->
         <ion-label>{{ message.content }}</ion-label>
       </ion-item>
     }
@@ -36,34 +33,48 @@
   </ion-list>
 
   <!-- Player de áudio (oculto) -->
-  <audio #audioPlayer controls style="display: none;"></audio>
+  <audio #audioPlayer preload="metadata" style="display: none;"></audio>
 </ion-content>
 
 <ion-footer class="chatbot-footer">
   <ion-toolbar>
     <!-- Botão de Play/Pause para o áudio -->
     <ion-button
-      slot="start"
+      class="audio-control-button"
       (click)="toggleAudioPlayback()"
       [disabled]="!currentAudioUrl || isLoading"
-      class="audio-control-button"
+      fill="clear"
+      size="default"
     >
-      <ion-icon [name]="isPlayingAudio ? 'pause-outline' : 'play-outline'"></ion-icon>
+      <ion-icon 
+        [name]="isPlayingAudio ? 'pause-outline' : 'play-outline'"
+        slot="icon-only">
+      </ion-icon>
     </ion-button>
 
-    <ion-input
-      [(ngModel)]="userMessage"
-      placeholder="Pergunte sobre futebol..."
-      (keyup.enter)="sendMessage()"
-      class="message-input"
-      [disabled]="isLoading"
-    ></ion-input>
-    <ion-button
-      slot="end"
-      (click)="sendMessage()"
-      [disabled]="isLoading || !userMessage.trim()"
-    >
-      <ion-icon name="send-outline"></ion-icon>
-    </ion-button>
+    <!-- Container do input com botão de envio integrado -->
+    <div class="input-container">
+      <ion-input
+        [(ngModel)]="userMessage"
+        placeholder="Digite sua mensagem sobre futebol..."
+        (keyup.enter)="sendMessage()"
+        (keypress)="onKeyPress($event)"
+        class="message-input"
+        [disabled]="isLoading"
+        maxlength="500"
+        fill="outline"
+      ></ion-input>
+      
+      <ion-button
+        class="send-button"
+        (click)="sendMessage()"
+        [disabled]="!canSendMessage()"
+        fill="solid"
+        size="small"
+        shape="round"
+      >
+        <ion-icon name="send-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
   </ion-toolbar>
 </ion-footer>

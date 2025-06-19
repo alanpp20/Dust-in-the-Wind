@@ -1,5 +1,5 @@
 // src/app/chatbot/chatbot.page.ts
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -19,12 +19,13 @@ import {
   IonFooter,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { sendOutline, playOutline, pauseOutline } from 'ionicons/icons'; // Importa ícones de play/pause
+import { sendOutline, playOutline, pauseOutline } from 'ionicons/icons';
 
 // Interface para as mensagens exibidas no chat
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  timestamp?: Date;
 }
 
 // Interfaces para a API Gemini
@@ -71,7 +72,7 @@ interface ElevenLabsRequest {
     IonFooter,
   ],
 })
-export class ChatbotPage implements OnInit, AfterViewInit {
+export class ChatbotPage implements OnInit, AfterViewInit, OnDestroy {
   // Referência ao ion-content para controle de scroll
   @ViewChild(IonContent, { static: false }) content!: IonContent;
   // Referência ao elemento de áudio no HTML
@@ -79,18 +80,19 @@ export class ChatbotPage implements OnInit, AfterViewInit {
 
   messages: Message[] = []; // Array de mensagens exibidas no chat
   userMessage: string = ''; // Modelo para o input do usuário
-  isLoading: boolean = false; // Indica se o assistente está a processar uma resposta
+  isLoading: boolean = false; // Indica se o assistente está processando uma resposta
 
   // Variáveis de estado para o controle do áudio
-  isPlayingAudio: boolean = false; // Indica se o áudio está a ser reproduzido
+  isPlayingAudio: boolean = false; // Indica se o áudio está sendo reproduzido
   currentAudioUrl: string | null = null; // Armazena a URL do último áudio gerado
 
+  // Controle de tentativas para retry
+  private maxRetries: number = 3;
+  private retryDelay: number = 1000; // 1 segundo
+
   // --- Chaves e Endpoints das APIs ---
-  // NOTA DE SEGURANÇA CRÍTICA:
-  // Chaves de API não devem ser hardcoded em aplicações cliente (frontend) em produção.
-  // Isso expõe a sua chave e pode levar a uso indevido.
-  // Considere usar um backend (servidor) para intermediar as chamadas à API,
-  // mantendo as chaves de API seguras no lado do servidor.
+  // NOTA DE SEGURANÇA: Em produção, use um backend para intermediar as chamadas
+  // e manter as chaves de API seguras no servidor
 
   // API Gemini
   private readonly GEMINI_API_KEY = 'AIzaSyBwC_ra7rMEK675PC-ZEZ7W8tq1MAecx6Y';
@@ -99,253 +101,360 @@ export class ChatbotPage implements OnInit, AfterViewInit {
 
   // API ElevenLabs
   private readonly ELEVENLABS_API_KEY = 'sk_f62e6e0a2eaeba403ee36c407a952be9a92043c50ab33c24';
-  private readonly ELEVENLABS_VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; // Carolina (feminina, brasileira )
+  private readonly ELEVENLABS_VOICE_ID = '21m00Tcm4TlvDq8ikWAM';
   private readonly ELEVENLABS_ENDPOINT = `https://api.elevenlabs.io/v1/text-to-speech/${this.ELEVENLABS_VOICE_ID}`;
   private readonly ELEVENLABS_MODEL_ID = 'eleven_multilingual_v2';
 
-  constructor( ) {
+  constructor() {
     // Adiciona os ícones que serão usados
     addIcons({ sendOutline, playOutline, pauseOutline });
+    
     // Mensagem de boas-vindas automática ao iniciar o chat
     this.messages.push({
       role: 'assistant',
       content: 'Olá! Sou seu assistente especialista em futebol. Como posso ajudar você hoje?',
+      timestamp: new Date()
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Configurações iniciais se necessário
+  }
 
-  // Este lifecycle hook é chamado após a inicialização das views do componente.
-  // É o lugar ideal para adicionar event listeners a elementos do DOM.
   ngAfterViewInit() {
-    if (this.audioPlayer && this.audioPlayer.nativeElement) {
-      // Atualiza o estado 'isPlayingAudio' quando o áudio começa a tocar
-      this.audioPlayer.nativeElement.addEventListener('play', () => {
+    this.setupAudioEventListeners();
+    this.scrollToBottom();
+  }
+
+  ngOnDestroy() {
+    // Limpa recursos ao destruir o componente
+    this.cleanupAudio();
+  }
+
+  /**
+   * Configura os event listeners para o player de áudio
+   */
+  private setupAudioEventListeners() {
+    if (this.audioPlayer?.nativeElement) {
+      const audio = this.audioPlayer.nativeElement;
+      
+      audio.addEventListener('play', () => {
         this.isPlayingAudio = true;
       });
-      // Atualiza o estado 'isPlayingAudio' quando o áudio é pausado
-      this.audioPlayer.nativeElement.addEventListener('pause', () => {
+      
+      audio.addEventListener('pause', () => {
         this.isPlayingAudio = false;
       });
-      // Atualiza o estado e limpa a URL quando o áudio termina
-      this.audioPlayer.nativeElement.addEventListener('ended', () => {
+      
+      audio.addEventListener('ended', () => {
         this.isPlayingAudio = false;
-        if (this.currentAudioUrl) {
-          URL.revokeObjectURL(this.currentAudioUrl); // Libera a URL do objeto
-          this.currentAudioUrl = null;
-        }
+        this.cleanupCurrentAudio();
+      });
+      
+      audio.addEventListener('error', (error) => {
+        console.error('Erro no player de áudio:', error);
+        this.isPlayingAudio = false;
+        this.cleanupCurrentAudio();
       });
     }
   }
 
   /**
-   * Envia a mensagem do usuário para o chatbot e processa a resposta.
+   * Envia a mensagem do usuário para o chatbot e processa a resposta
    */
   async sendMessage() {
-    // Impede o envio de mensagens vazias ou apenas com espaços
-    if (!this.userMessage.trim()) {
+    // Validação da mensagem
+    if (!this.userMessage?.trim() || this.isLoading) {
       return;
     }
 
     const currentMessage = this.userMessage.trim();
-    // Adiciona a mensagem do usuário à lista de mensagens
-    this.messages.push({ role: 'user', content: currentMessage });
-    this.userMessage = ''; // Limpa o input imediatamente
-    this.scrollToBottom(); // Rola para o fundo para mostrar a mensagem do usuário
+    
+    // Adiciona a mensagem do usuário
+    this.messages.push({ 
+      role: 'user', 
+      content: currentMessage,
+      timestamp: new Date()
+    });
+    
+    this.userMessage = '';
+    this.scrollToBottom();
+    this.isLoading = true;
 
-    this.isLoading = true; // Ativa o spinner de carregamento
+    // Para áudio anterior se estiver tocando
+    this.stopCurrentAudio();
 
-    // Se houver um áudio anterior a ser reproduzido, pare-o e limpe-o
-    if (this.audioPlayer && this.audioPlayer.nativeElement && !this.audioPlayer.nativeElement.paused) {
+    try {
+      await this.processMessage(currentMessage);
+    } catch (error) {
+      console.error('Erro ao processar mensagem:', error);
+      this.addErrorMessage('Desculpe, houve um erro ao processar sua mensagem. Tente novamente.');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  /**
+   * Processa a mensagem do usuário com retry automático
+   */
+  private async processMessage(message: string, attempt: number = 1): Promise<void> {
+    try {
+      const geminiContents = this.prepareGeminiContents();
+      const response = await this.callGeminiAPI(geminiContents);
+      
+      if (response) {
+        this.messages.push({
+          role: 'assistant',
+          content: response,
+          timestamp: new Date()
+        });
+        
+        this.scrollToBottom();
+        
+        // Gerar áudio em background
+        this.generateAudioAsync(response);
+      }
+    } catch (error) {
+      if (attempt < this.maxRetries) {
+        console.log(`Tentativa ${attempt} falhou, tentando novamente...`);
+        await this.delay(this.retryDelay * attempt);
+        return this.processMessage(message, attempt + 1);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Prepara o histórico de mensagens para a API Gemini
+   */
+  private prepareGeminiContents(): GeminiContent[] {
+    const geminiContents: GeminiContent[] = [];
+
+    // Instrução de persona
+    geminiContents.push({
+      role: 'model',
+      parts: [{
+        text: `Você é um especialista em futebol brasileiro. Responda apenas perguntas sobre futebol (jogos, clubes, regras, história, jogadores, táticas, competições). 
+        Se a pergunta não for sobre futebol, responda educadamente que só trata de assuntos futebolísticos. 
+        Suas respostas devem ser: informativas, objetivas, em português brasileiro, entre 50-150 palavras. 
+        Ao final, sempre pergunte se o usuário quer saber mais sobre algum aspecto específico.`
+      }]
+    });
+
+    // Converte mensagens para formato Gemini
+    let lastRole: 'user' | 'model' | null = null;
+    
+    for (const msg of this.messages.slice(1)) { // Pula mensagem de boas-vindas
+      const role = msg.role === 'assistant' ? 'model' : 'user';
+      
+      // Garante alternância de roles
+      if (role === lastRole) {
+        if (role === 'user') {
+          geminiContents.push({ role: 'model', parts: [{ text: 'Entendi.' }] });
+        } else {
+          geminiContents.push({ role: 'user', parts: [{ text: 'Continue.' }] });
+        }
+      }
+      
+      geminiContents.push({
+        role: role,
+        parts: [{ text: msg.content }]
+      });
+      
+      lastRole = role;
+    }
+
+    return geminiContents;
+  }
+
+  /**
+   * Chama a API do Gemini
+   */
+  private async callGeminiAPI(contents: GeminiContent[]): Promise<string> {
+    const response = await fetch(this.GEMINI_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: contents,
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 200,
+        }
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      console.error('Erro da API Gemini:', response.status, errorData);
+      throw new Error(`Erro na API Gemini: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
+      console.error('Resposta inválida da API Gemini:', data);
+      throw new Error('Resposta inválida da API');
+    }
+
+    return data.candidates[0].content.parts[0].text.trim();
+  }
+
+  /**
+   * Gera áudio de forma assíncrona
+   */
+  private async generateAudioAsync(text: string) {
+    try {
+      await this.generateAudio(text);
+    } catch (error) {
+      console.error('Erro ao gerar áudio:', error);
+      // Não exibe erro para o usuário, apenas loga
+    }
+  }
+
+  /**
+   * Gera áudio usando ElevenLabs
+   */
+  private async generateAudio(text: string): Promise<void> {
+    const requestBody: ElevenLabsRequest = {
+      text: this.cleanTextForAudio(text),
+      model_id: this.ELEVENLABS_MODEL_ID,
+      voice_settings: {
+        stability: 0.75,
+        similarity_boost: 0.75,
+      },
+    };
+
+    const response = await fetch(this.ELEVENLABS_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'xi-api-key': this.ELEVENLABS_API_KEY,
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro na API ElevenLabs: ${response.status}`);
+    }
+
+    const audioBlob = await response.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+    
+    this.currentAudioUrl = audioUrl;
+    
+    if (this.audioPlayer?.nativeElement) {
+      this.audioPlayer.nativeElement.src = audioUrl;
+      // Auto-play removido para melhor UX
+    }
+  }
+
+  /**
+   * Limpa o texto para melhor síntese de áudio
+   */
+  private cleanTextForAudio(text: string): string {
+    return text
+      .replace(/\*/g, '') // Remove asteriscos
+      .replace(/#{1,6}\s/g, '') // Remove headers markdown
+      .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Remove links markdown
+      .replace(/\s+/g, ' ') // Normaliza espaços
+      .trim();
+  }
+
+  /**
+   * Alterna reprodução/pausa do áudio
+   */
+  toggleAudioPlayback() {
+    if (!this.audioPlayer?.nativeElement || !this.currentAudioUrl) {
+      return;
+    }
+
+    const audio = this.audioPlayer.nativeElement;
+    
+    if (audio.paused) {
+      audio.play().catch(error => {
+        console.error('Erro ao reproduzir áudio:', error);
+      });
+    } else {
+      audio.pause();
+    }
+  }
+
+  /**
+   * Para o áudio atual
+   */
+  private stopCurrentAudio() {
+    if (this.audioPlayer?.nativeElement && !this.audioPlayer.nativeElement.paused) {
       this.audioPlayer.nativeElement.pause();
       this.audioPlayer.nativeElement.currentTime = 0;
     }
+    this.cleanupCurrentAudio();
+  }
+
+  /**
+   * Limpa o áudio atual
+   */
+  private cleanupCurrentAudio() {
     if (this.currentAudioUrl) {
       URL.revokeObjectURL(this.currentAudioUrl);
       this.currentAudioUrl = null;
     }
     this.isPlayingAudio = false;
-
-
-    try {
-      // Prepara o histórico da conversa para a API Gemini
-      const geminiContents: GeminiContent[] = [];
-
-      // 1. Adiciona a instrução de persona e regras como a primeira "fala" do modelo.
-      // Isso é crucial para controlar o comportamento do Gemini.
-      geminiContents.push({
-        role: 'model',
-        parts: [
-          {
-            text: `Você é um especialista em futebol. Responda apenas a perguntas relacionadas a futebol (jogos, clubes, regras, história, jogadores etc.). Se a pergunta não for sobre futebol, responda educadamente que só pode tratar de assuntos futebolísticos e sugira que o usuário reformule. Suas respostas devem ser curtas, claras, humanas, informais, empáticas e engajadas. Não use emojis nem asteriscos. Ao final de cada resposta, pergunte sempre se o usuário quer saber mais.`,
-          },
-        ],
-      });
-
-      // 2. Mapeia as mensagens existentes para o formato Gemini, garantindo a alternância de roles.
-      // A API Gemini exige que os roles alternem estritamente entre 'user' e 'model'.
-      let lastRole: 'user' | 'model' | null = null;
-      // Começa a partir da segunda mensagem, pois a primeira é a de boas-vindas do assistente
-      // e a instrução de persona já foi adicionada como a primeira "fala" do modelo.
-      for (const msg of this.messages) {
-        const role = msg.role === 'assistant' ? 'model' : 'user';
-        // Se o role atual for o mesmo do último, significa que houve uma quebra na alternância.
-        // Isso pode acontecer se o assistente responder duas vezes seguidas ou o usuário.
-        // Para Gemini, precisamos garantir a alternância.
-        if (role === lastRole) {
-          // Se o último foi 'user' e o atual é 'user', adicionamos um 'model' vazio para alternar.
-          if (role === 'user') {
-            geminiContents.push({ role: 'model', parts: [{ text: '' }] });
-          }
-          // Se o último foi 'model' e o atual é 'model', adicionamos um 'user' vazio para alternar.
-          // Isso é menos comum, mas pode acontecer com mensagens de erro do assistente.
-          else if (role === 'model') {
-            geminiContents.push({ role: 'user', parts: [{ text: '' }] });
-          }
-        }
-        geminiContents.push({ role: role, parts: [{ text: msg.content }] });
-        lastRole = role;
-      }
-
-      // Se a última mensagem adicionada for do usuário, adicionamos um placeholder para o modelo.
-      // Isso é necessário para que o Gemini saiba que é a vez dele de responder.
-      if (lastRole === 'user') {
-        geminiContents.push({ role: 'model', parts: [{ text: '' }] });
-      }
-
-      // --- Chamada à API Gemini ---
-      const geminiResponse = await fetch(this.GEMINI_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: geminiContents,
-        }),
-      });
-
-      if (!geminiResponse.ok) {
-        const errorBody = await geminiResponse.json();
-        console.error('Erro da API Gemini:', geminiResponse.status, geminiResponse.statusText, errorBody);
-        this.messages.push({
-          role: 'assistant',
-          content: `Desculpe, houve um erro ao processar sua solicitação no momento. Por favor, tente novamente mais tarde.`,
-        });
-        this.scrollToBottom();
-        return; // Sai da função se houver erro na Gemini
-      }
-
-      const geminiData = await geminiResponse.json();
-      console.log('Resposta completa da API Gemini:', geminiData);
-
-      let assistantResponseText: string = 'Não foi possível obter uma resposta válida do assistente.';
-
-      // Extrai a resposta do Gemini
-      if (
-        geminiData.candidates &&
-        geminiData.candidates.length > 0 &&
-        geminiData.candidates[0].content &&
-        geminiData.candidates[0].content.parts &&
-        geminiData.candidates[0].content.parts.length > 0
-      ) {
-        assistantResponseText = geminiData.candidates[0].content.parts[0].text;
-      } else {
-        console.warn('Estrutura de resposta da API Gemini inesperada ou incompleta:', geminiData);
-        assistantResponseText = 'Resposta do assistente em formato inesperado.';
-      }
-
-      // Adiciona a pergunta "Quer saber mais?" ao final da resposta
-      assistantResponseText += ' Quer saber mais?';
-
-      // Adiciona a resposta do assistente à lista de mensagens
-      this.messages.push({ role: 'assistant', content: assistantResponseText });
-      this.scrollToBottom();
-
-      // --- Chamada à API ElevenLabs para gerar áudio ---
-      await this.playAssistantResponse(assistantResponseText);
-
-    } catch (error: any) {
-      console.error('Erro ao enviar mensagem para o chatbot ou gerar áudio:', error);
-      this.messages.push({
-        role: 'assistant',
-        content: 'Desculpe, não consegui conectar ao serviço no momento. Verifique sua conexão com a internet.',
-      });
-      this.scrollToBottom();
-    } finally {
-      this.isLoading = false; // Desativa o spinner de carregamento
-    }
   }
 
   /**
-   * Gera e reproduz o áudio da resposta do assistente usando ElevenLabs.
-   * @param text A resposta do assistente a ser convertida em áudio.
+   * Limpa todos os recursos de áudio
    */
-  private async playAssistantResponse(text: string) {
-    try {
-      const elevenLabsBody: ElevenLabsRequest = {
-        text: text,
-        model_id: this.ELEVENLABS_MODEL_ID,
-        voice_settings: {
-          stability: 0.75, // Ajuste para maior estabilidade
-          similarity_boost: 0.75, // Ajuste para maior similaridade
-        },
-      };
-
-      const elevenLabsResponse = await fetch(this.ELEVENLABS_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'xi-api-key': this.ELEVENLABS_API_KEY,
-        },
-        body: JSON.stringify(elevenLabsBody),
-      });
-
-      if (!elevenLabsResponse.ok) {
-        const errorBody = await elevenLabsResponse.json();
-        console.error('Erro da API ElevenLabs:', elevenLabsResponse.status, elevenLabsResponse.statusText, errorBody);
-        // Não adiciona mensagem de erro ao chat para não poluir, apenas loga.
-        return;
-      }
-
-      // Obtém o blob de áudio e cria uma URL para ele
-      const audioBlob = await elevenLabsResponse.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
-
-      // Armazena a URL do áudio atual para controle de play/pause
-      this.currentAudioUrl = audioUrl;
-
-      // Define a URL do áudio e reproduz
-      if (this.audioPlayer && this.audioPlayer.nativeElement) {
-        this.audioPlayer.nativeElement.src = audioUrl;
-        this.audioPlayer.nativeElement.play();
-      }
-    } catch (error) {
-      console.error('Erro ao reproduzir áudio com ElevenLabs:', error);
-    }
+  private cleanupAudio() {
+    this.stopCurrentAudio();
   }
 
   /**
-   * Alterna entre reproduzir e pausar o áudio atual.
+   * Adiciona mensagem de erro ao chat
    */
-  toggleAudioPlayback() {
-    if (this.audioPlayer && this.audioPlayer.nativeElement && this.currentAudioUrl) {
-      if (this.audioPlayer.nativeElement.paused) {
-        this.audioPlayer.nativeElement.play();
-      } else {
-        this.audioPlayer.nativeElement.pause();
-      }
-    }
+  private addErrorMessage(message: string) {
+    this.messages.push({
+      role: 'assistant',
+      content: message,
+      timestamp: new Date()
+    });
+    this.scrollToBottom();
   }
 
   /**
-   * Rola o conteúdo do chat para o fundo com uma animação suave.
-   * Usa requestAnimationFrame para garantir que a rolagem ocorra após a renderização do DOM.
+   * Rola o conteúdo para o final
    */
   private scrollToBottom() {
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       if (this.content) {
-        this.content.scrollToBottom(300); // Animação de rolagem de 300ms
+        this.content.scrollToBottom(300);
       }
-    });
+    }, 100);
+  }
+
+  /**
+   * Utilitário para delay
+   */
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Verifica se pode enviar mensagem
+   */
+  canSendMessage(): boolean {
+    return !this.isLoading && this.userMessage?.trim().length > 0;
+  }
+
+  /**
+   * Handle para Enter no input
+   */
+  onKeyPress(event: KeyboardEvent) {
+    if (event.key === 'Enter' && this.canSendMessage()) {
+      this.sendMessage();
+    }
   }
 }
