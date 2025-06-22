@@ -3,11 +3,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, // Embora não usados diretamente aqui, são importações comuns
+  IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton,
   IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent,
-  IonSpinner, IonImg
+  IonSpinner, IonImg, IonModal, IonButton, IonIcon
 } from '@ionic/angular/standalone';
-import { DatePipe } from '@angular/common'; // Importe DatePipe para o pipe 'date'
+import { DatePipe } from '@angular/common';
+import { addIcons } from 'ionicons';
+import { closeOutline, openOutline, shareOutline } from 'ionicons/icons';
 
 interface NewsArticle {
   title: string;
@@ -19,23 +21,27 @@ interface NewsArticle {
 }
 
 @Component({
-  selector: 'app-news', // Este é o seletor que usaremos na página 'folder'
+  selector: 'app-news',
   templateUrl: './news.page.html',
   styleUrls: ['./news.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, DatePipe, // Adicione DatePipe aqui
+    CommonModule, FormsModule, DatePipe,
     IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton,
     IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent,
-    IonSpinner, IonImg
+    IonSpinner, IonImg, IonModal, IonButton, IonIcon
   ]
 })
 export class NewsPage implements OnInit {
   news: NewsArticle[] = [];
   isLoading: boolean = true;
   error: string | null = null;
+  selectedArticle: NewsArticle | null = null;
+  isModalOpen: boolean = false;
 
-  constructor() { }
+  constructor() {
+    addIcons({ closeOutline, openOutline, shareOutline });
+  }
 
   ngOnInit() {
     this.loadNews();
@@ -45,14 +51,13 @@ export class NewsPage implements OnInit {
     this.isLoading = true;
     this.error = null;
     try {
-      // Use a API Key fornecida
-      const response = await fetch("https://newsdata.io/api/1/latest?apikey=pub_5953053e1ae14046a9f06577d62c28c7&q=futebol&language=pt" );
+      const response = await fetch("https://newsdata.io/api/1/latest?apikey=pub_5953053e1ae14046a9f06577d62c28c7&q=futebol&language=pt");
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
       if (data.results && data.results.length > 0) {
-        this.news = data.results.filter((article: NewsArticle) => article.image_url); // Filtra artigos sem imagem
+        this.news = data.results.filter((article: NewsArticle) => article.image_url);
       } else {
         this.news = [];
         this.error = "Nenhuma notícia de futebol encontrada.";
@@ -65,7 +70,31 @@ export class NewsPage implements OnInit {
     }
   }
 
+  openNewsModal(article: NewsArticle) {
+    this.selectedArticle = article;
+    this.isModalOpen = true;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+    this.selectedArticle = null;
+  }
+
   openNewsLink(url: string) {
     window.open(url, '_blank');
+  }
+
+  shareArticle(article: NewsArticle) {
+    if (navigator.share) {
+      navigator.share({
+        title: article.title,
+        text: article.description,
+        url: article.link,
+      });
+    } else {
+      // Fallback para dispositivos que não suportam Web Share API
+      navigator.clipboard.writeText(article.link);
+      // Aqui você poderia mostrar um toast informando que o link foi copiado
+    }
   }
 }

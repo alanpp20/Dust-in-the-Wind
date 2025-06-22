@@ -10,7 +10,8 @@ import {
   homeOutline, // Padronizado para -outline
   personOutline, // Padronizado para -outline
   footballOutline, // Ícone para Placares
-  chatbubblesOutline // Ícone para Chatbot
+  chatbubblesOutline, // Ícone para Chatbot
+  informationCircleOutline // Ícone para Sobre o App
   // Se você tiver outros ícones para 'recover' ou 'register', adicione-os aqui também
   // Ex: keyOutline, personAddOutline
 } from 'ionicons/icons';
@@ -43,6 +44,7 @@ export class AppComponent {
     { title: 'Home', url: '/folder/inbox', icon: 'home-outline' }, // Sua página principal com as notícias
     { title: 'Placares ao Vivo', url: '/placares', icon: 'football-outline' }, // Novo item
     { title: 'Chatbot', url: '/chatbot', icon: 'chatbubbles-outline' }, // Novo item
+    { title: 'Sobre o App', url: '/sobre', icon: 'information-circle-outline' }, // Nova página
     { title: 'Perfil', url: '/perfil', icon: 'person-outline' },
     { title: 'Login', url: '/login', icon: 'person-outline' },
     // Adicione aqui outros itens do seu menu, como Recover e Register, se houver
@@ -57,6 +59,7 @@ export class AppComponent {
       personOutline,
       footballOutline,
       chatbubblesOutline,
+      informationCircleOutline, // Novo ícone
       // Adicione aqui os ícones para Recover, Register, etc. se usar
       // keyOutline,
       // personAddOutline,

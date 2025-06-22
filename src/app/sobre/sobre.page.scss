@@ -1,0 +1,165 @@
+/* Cabeçalho */
+ion-header {
+  --background: #1C8C79;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+ion-menu-button, ion-back-button {
+  --color: #000000;
+}
+
+/* Conteúdo */
+ion-content {
+  --background: #f2f4f5;
+}
+
+/* Hero */
+.hero-section {
+  background: linear-gradient(135deg, #1C8C79, #23bba4);
+  padding: 40px 20px 30px;
+  text-align: center;
+  color: #fff;
+  border-radius: 0 0 24px 24px;
+}
+
+.app-icon-container {
+  font-size: 64px;
+  margin-bottom: 12px;
+}
+
+.hero-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.hero-subtitle {
+  font-size: 15px;
+  opacity: 0.95;
+}
+
+/* Seções */
+.section-container {
+  margin-top: 24px;
+  padding: 0 16px 40px;
+}
+
+.section {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-icon {
+  font-size: 24px;
+  color: #1C8C79;
+  margin-right: 10px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1C1C1C;
+}
+
+/* Texto */
+.description, .mission-text, .team-intro, .feature-description {
+  font-size: 15px;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Equipe */
+.team-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 10px;
+  justify-content: center;
+}
+
+.team-member {
+  flex: 1 1 140px;
+  max-width: 180px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+}
+
+.member-avatar ion-icon {
+  font-size: 44px;
+  color: #1C8C79;
+}
+
+.member-name {
+  font-weight: 600;
+  margin: 6px 0 2px;
+}
+
+.member-role {
+  font-size: 13px;
+  color: #666;
+}
+
+/* Funcionalidades */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.feature-item {
+  background: #e9f9f6;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.feature-item:hover {
+  transform: translateY(-4px);
+}
+
+.feature-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1C8C79;
+  margin-bottom: 6px;
+}
+
+.feature-description {
+  font-size: 14px;
+  color: #444;
+}
+
+/* Rodapé */
+.footer {
+  text-align: center;
+  font-size: 13px;
+  color: #888;
+  padding: 24px 10px 40px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 24px;
+  }
+  .hero-subtitle {
+    font-size: 14px;
+  }
+  .feature-item {
+    padding: 12px;
+  }
+}

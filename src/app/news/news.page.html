@@ -1,6 +1,4 @@
 <!-- src/app/news/news.page.html -->
-<!-- O cabeçalho será fornecido pela página 'folder' -->
-
 <div class="news-container">
   @if (isLoading) {
     <div class="loading-spinner-wrapper">
@@ -12,7 +10,7 @@
     <p class="no-news-message">Nenhuma notícia de futebol disponível no momento.</p>
   } @else {
     @for (article of news; track article.link) {
-      <ion-card class="news-card" (click)="openNewsLink(article.link)">
+      <ion-card class="news-card" (click)="openNewsModal(article)">
         @if (article.image_url) {
           <ion-img [src]="article.image_url" alt="{{ article.title }}"></ion-img>
         }
@@ -27,3 +25,66 @@
     }
   }
 </div>
+
+<!-- Modal para exibir a notícia completa -->
+<ion-modal [isOpen]="isModalOpen" (willDismiss)="closeModal()" class="news-modal">
+  <ng-template>
+    @if (selectedArticle) {
+      <ion-header class="modal-header">
+        <ion-toolbar>
+          <ion-title>{{ selectedArticle.source_id }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeModal()" fill="clear">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      
+      <ion-content class="modal-content">
+        <div class="article-container">
+          @if (selectedArticle.image_url) {
+            <div class="article-image-container">
+              <ion-img [src]="selectedArticle.image_url" alt="{{ selectedArticle.title }}" class="article-image"></ion-img>
+            </div>
+          }
+          
+          <div class="article-content">
+            <h1 class="article-title">{{ selectedArticle.title }}</h1>
+            
+            <div class="article-meta">
+              <span class="article-source">{{ selectedArticle.source_id }}</span>
+              <span class="article-date">{{ selectedArticle.pubDate | date:'medium' }}</span>
+            </div>
+            
+            <div class="article-description">
+              <p>{{ selectedArticle.description }}</p>
+            </div>
+            
+            <div class="article-actions">
+              <ion-button 
+                expand="block" 
+                fill="solid" 
+                color="primary" 
+                (click)="openNewsLink(selectedArticle.link)"
+                class="read-more-btn">
+                <ion-icon name="open-outline" slot="start"></ion-icon>
+                Ler Matéria Completa
+              </ion-button>
+              
+              <ion-button 
+                expand="block" 
+                fill="outline" 
+                color="medium" 
+                (click)="shareArticle(selectedArticle)"
+                class="share-btn">
+                <ion-icon name="share-outline" slot="start"></ion-icon>
+                Compartilhar
+              </ion-button>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+    }
+  </ng-template>
+</ion-modal>

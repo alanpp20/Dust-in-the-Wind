@@ -1,0 +1,117 @@
+<ion-header [translucent]="true" class="header-gradient">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="header-title">Sobre o App</ion-title>
+    <ion-buttons slot="end">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="content-background">
+
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="app-icon-container">
+        <ion-icon name="football-outline" class="app-icon"></ion-icon>
+      </div>
+      <h1 class="hero-title">Futebol App</h1>
+      <p class="hero-subtitle">A plataforma definitiva para os apaixonados por futebol</p>
+    </div>
+  </div>
+
+  <div class="section-container">
+
+    <!-- Sobre -->
+    <div class="section about-section">
+      <div class="section-header">
+        <ion-icon name="information-circle-outline" class="section-icon"></ion-icon>
+        <h2 class="section-title">Sobre o App</h2>
+      </div>
+      <div class="section-content">
+        <p class="description">
+          Bem-vindo(a) ao <strong>Futebol App</strong>, a plataforma definitiva para os apaixonados por futebol.
+          Nosso objetivo é transformar a maneira como os fãs acompanham o jogo, oferecendo atualizações em tempo real,
+          análises exclusivas e uma interface moderna e intuitiva.
+        </p>
+      </div>
+    </div>
+
+    <!-- Equipe -->
+    <div class="section team-section">
+      <div class="section-header">
+        <ion-icon name="people-outline" class="section-icon"></ion-icon>
+        <h2 class="section-title">Nossos Criadores</h2>
+      </div>
+      <div class="section-content">
+        <p class="team-intro">
+          Esse projeto nasceu da união entre paixão por futebol, tecnologia e criatividade, e foi idealizado por:
+        </p>
+        <div class="team-grid">
+          <div class="team-member" *ngFor="let member of teamMembers">
+            <div class="member-avatar">
+              <ion-icon name="person-circle-outline"></ion-icon>
+            </div>
+            <h3 class="member-name">{{ member.name }}</h3>
+            <p class="member-role">{{ member.role }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Missão -->
+    <div class="section mission-section">
+      <div class="section-header">
+        <ion-icon name="rocket-outline" class="section-icon"></ion-icon>
+        <h2 class="section-title">Nossa Missão</h2>
+      </div>
+      <div class="section-content">
+        <p class="mission-text">
+          Acreditamos que o futebol vai além das quatro linhas. Por isso criamos um app que une estatísticas em tempo real,
+          notícias personalizadas e uma experiência interativa que coloca o usuário no centro da partida.
+        </p>
+        <p class="mission-text">
+          Seja para acompanhar o placar do seu time, receber alertas sobre o jogo ou simplesmente explorar novos conteúdos,
+          estamos aqui para que cada toque na tela te aproxime do que realmente importa: <strong>o amor pelo esporte</strong>.
+        </p>
+      </div>
+    </div>
+
+    <!-- Funcionalidades -->
+    <div class="section features-section">
+      <div class="section-header">
+        <h2 class="section-title">Funcionalidades</h2>
+      </div>
+      <div class="section-content">
+        <div class="features-grid">
+          <div class="feature-item">
+            <h3 class="feature-title">Placares ao Vivo</h3>
+            <p class="feature-description">Acompanhe os jogos em tempo real com estatísticas detalhadas</p>
+          </div>
+          <div class="feature-item">
+            <h3 class="feature-title">Notícias</h3>
+            <p class="feature-description">Últimas notícias do mundo do futebol sempre atualizadas</p>
+          </div>
+          <div class="feature-item">
+            <h3 class="feature-title">Chatbot</h3>
+            <p class="feature-description">Tire suas dúvidas com nosso assistente virtual inteligente</p>
+          </div>
+          <div class="feature-item">
+            <h3 class="feature-title">Design Responsivo</h3>
+            <p class="feature-description">Interface moderna e otimizada para todos os dispositivos</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p class="footer-text">© 2025 Futebol App. Feito com ❤️ para os apaixonados por futebol.</p>
+  </div>
+
+</ion-content>
